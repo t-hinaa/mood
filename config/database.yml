@@ -24,6 +24,7 @@ default: &default
 
 development:
   <<: *default
+  host: db
   database: myapp_development
 
   # The specified database role being used to connect to PostgreSQL.
