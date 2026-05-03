@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root 'top_pages#index' 
   get 'moods/new', to: 'moods#create_anonymous_session'
-
+  resources :mood_entries, only: [:new, :create, :index]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
