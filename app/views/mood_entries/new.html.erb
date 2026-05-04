@@ -18,16 +18,17 @@
     <div class="form-group">
       <%= f.label :mood_level, "今の気分は？", class: "form-label" %>
       <div class="mood-buttons">
-        <% (1..5).each do |level| %>
-          <%= f.radio_button :mood_level, level, id: "mood_level_#{level}", class: "mood-radio" %>
-          <%= f.label "mood_level_#{level}", class: "mood-label" do %>
-            <span class="mood-emoji">
-              <%= MoodEntry.new(mood_level: level).mood_emoji %>
-            </span>
-          <% end %>
+        <% (1..8).each do |level| %>
+          <div class="mood-option">
+            <%= f.radio_button :mood_level, level, id: "mood_level_#{level}", class: "mood-radio" %>
+            <%= label_tag "mood_level_#{level}", class: "mood-label" do %>
+              <span class="mood-emoji">
+                <%= MoodEntry.new(mood_level: level).mood_emoji %>
+              </span>
+            <% end %>
+           </div>
         <% end %>
       </div>
-    </div>
 
     <!-- 記録日時 -->
     <div class="form-group">

@@ -8,7 +8,7 @@ class MoodEntry < ApplicationRecord
   # 気分レベルに対応する絵文字を返すメソッド
   def mood_emoji
     case mood_level
-    when 1 then 
+    when 1 then ""
     when 2 then 
     when 3 then 
     when 4 then 
