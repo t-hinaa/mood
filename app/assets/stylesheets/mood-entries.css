@@ -1,0 +1,97 @@
+/* 気分選択ボタン */
+.mood-buttons {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.mood-radio {
+  display: none;
+}
+
+.mood-label {
+  cursor: pointer;
+  padding: 15px;
+  border: 3px solid #ddd;
+  border-radius: 50%;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-label:hover {
+  border-color: #007bff;
+  transform: scale(1.1);
+}
+
+.mood-radio:checked + .mood-label {
+  border-color: #007bff;
+  background-color: #e7f3ff;
+  transform: scale(1.2);
+}
+
+.mood-emoji {
+  font-size: 2.5rem;
+}
+
+/* 一覧画面 */
+.mood-entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mood-entry-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mood-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.mood-emoji-large {
+  font-size: 3rem;
+}
+
+.mood-entry-info {
+  flex: 1;
+}
+
+.mood-date {
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
+.mood-level {
+  margin: 5px 0 0 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.mood-entry-note {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  color: #555;
+}
+
+/* フォーム */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: block;
+}

@@ -1,0 +1,40 @@
+<div class="container">
+  <h1>気分の記録一覧</h1>
+
+  <div class="mb-3">
+    <%= link_to "新しく記録する", new_mood_entry_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @mood_entries.any? %>
+    <div class="mood-entries-list">
+      <% @mood_entries.each do |entry| %>
+        <div class="mood-entry-card">
+          <div class="mood-entry-header">
+            <span class="mood-emoji-large">
+              <%= entry.mood_emoji %>
+            </span>
+            <div class="mood-entry-info">
+              <p class="mood-date">
+                <%= entry.recorded_at.strftime("%Y年%m月%d日 %H:%M") %>
+              </p>
+              <p class="mood-level">気分レベル: <%= entry.mood_level %></p>
+            </div>
+          </div>
+
+          
+          <% if entry.note.present? %>
+            <div class="mood-entry-note">
+              <%= simple_format(entry.note) %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <p>まだ記録がありません。</p>
+      <p><%= link_to "最初の記録をつけてみましょう！", new_mood_entry_path %></p>
+    </div>
+  <% end %>
+</div>
+

@@ -1,0 +1,54 @@
+<div class="container">
+  <h1>今日の気分を記録</h1>
+
+  <%= form_with model: @mood_entry, local: true do |f| %>
+    <!-- エラーメッセージ表示 -->
+    <% if @mood_entry.errors.any? %>
+      <div class="alert alert-danger">
+        <h4><%= pluralize(@mood_entry.errors.count, "error") %> がありました：</h4>
+        <ul>
+          <% @mood_entry.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- 気分レベル選択 -->
+    <div class="form-group">
+      <%= f.label :mood_level, "今の気分は？", class: "form-label" %>
+      <div class="mood-buttons">
+        <% (1..5).each do |level| %>
+          <%= f.radio_button :mood_level, level, id: "mood_level_#{level}", class: "mood-radio" %>
+          <%= f.label "mood_level_#{level}", class: "mood-label" do %>
+            <span class="mood-emoji">
+              <%= MoodEntry.new(mood_level: level).mood_emoji %>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 記録日時 -->
+    <div class="form-group">
+      <%= f.label :recorded_at, "日時", class: "form-label" %>
+      <%= f.datetime_local_field :recorded_at, class: "form-control" %>
+    </div>
+
+    <!-- メモ -->
+    <div class="form-group">
+      <%= f.label :note, "メモ（任意）", class: "form-label" %>
+      <%= f.text_area :note, rows: 4, class: "form-control", placeholder: "今日の出来事や気づいたことを書いてみましょう" %>
+    </div>
+
+    <!-- 送信ボタン -->
+    <div class="form-group">
+      <%= f.submit "記録する", class: "btn btn-primary btn-lg w-100" %>
+    </div>
+  <% end %>
+
+  <!-- 一覧へのリンク -->
+  <div class="mt-3 text-center">
+    <%= link_to "これまでの記録を見る", mood_entries_path, class: "btn btn-secondary" %>
+  </div>
+</div>
