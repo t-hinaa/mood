@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_01_150739) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_093616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,6 +24,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_01_150739) do
     t.index ["user_id"], name: "index_mood_entries_on_user_id"
   end
 
+  create_table "mood_records", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "emotion_type", null: false
+    t.text "note"
+    t.date "recorded_date", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id", "recorded_date"], name: "index_mood_records_on_user_id_and_recorded_date", unique: true
+    t.index ["user_id"], name: "index_mood_records_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -32,4 +43,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_01_150739) do
   end
 
   add_foreign_key "mood_entries", "users"
+  add_foreign_key "mood_records", "users"
 end

@@ -24,7 +24,7 @@ class MoodEntriesController < ApplicationController
         end
     end
 
-    # 一覧画面
+    # 気分一覧画面
     def index
         # ログインしている場合はそのユーザーの記録
         # ログインしていない場合はセッションに保存された記録IDから取得
@@ -35,6 +35,25 @@ class MoodEntriesController < ApplicationController
           @mood_entries = MoodEntry.where(id: entry_ids).order(recorded_at: :desc)
         end
     end
+
+    # カレンダー画面
+    def calendar
+        @year = params[:year]&.to_i || Date.today.year
+        @month = params[:month]&.to_i || Date.today.month
+    
+        start_date = Date.new(@year, @month, 1)
+        end_date = start_date.end_of_month
+    
+    # current_userがある場合のみカレンダー表示
+        if defined?(current_user) && current_user
+          @mood_records = current_user.mood_records
+                                  .where(recorded_date: start_date..end_date)
+                                  .index_by(&:recorded_date)
+        else
+          # ログインしていない場合は空のハッシュ
+          @mood_records = {}
+        end
+      end
 
     private
 

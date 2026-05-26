@@ -1,0 +1,15 @@
+<% 
+  emotion_icons = {
+    'very_good' => { icon: '😊', color: 'text-yellow-400', label: 'とても良い' },
+    'good' => { icon: '🙂', color: 'text-green-400', label: '良い' },
+    'normal' => { icon: '😐', color: 'text-blue-400', label: '普通' },
+    'bad' => { icon: '😟', color: 'text-orange-400', label: '悪い' },
+    'very_bad' => { icon: '😢', color: 'text-red-400', label: 'とても悪い' }
+  }
+  
+  icon_data = emotion_icons[emotion_type] || emotion_icons['normal']
+%>
+
+<div class="emotion-icon <%= icon_data[:color] %>">
+  <span class="text-2xl"><%= icon_data[:icon] %></span>
+</div>

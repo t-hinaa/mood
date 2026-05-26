@@ -1,0 +1,11 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">気分カレンダー</h1>
+    <%= link_to '気分入力画面へ', mood_entries_path, class: 'btn btn-primary' %>
+  </div>
+  
+  <%= render 'calendar_grid', 
+             year: @year, 
+             month: @month, 
+             mood_records: @mood_records %>
+</div>
