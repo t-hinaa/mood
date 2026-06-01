@@ -1,0 +1,36 @@
+class MoodRecordsController < ApplicationController
+  
+  def index
+    @year = params[:year]&.to_i || Date.today.year
+    @month = params[:month]&.to_i || Date.today.month
+    
+    # 月初と月末を取得
+    start_date = Date.new(@year, @month, 1)
+    end_date = start_date.end_of_month
+
+    # current_userがある場合のみその月の記録を取得しカレンダー表示
+    if defined?(current_user) && current_user
+      @mood_records = current_user.mood_records
+                                  .where(recorded_date: start_date..end_date)
+                                  .index_by(&:recorded_date)
+    else
+      # ログインしていない場合は空のハッシュ
+      @mood_records = {}
+    end
+  end
+
+  def create
+    @mood_record = current_user.mood_records.build(mood_record_params)
+    
+    if @mood_record.save
+      redirect_to mood_records_path, notice: '気分を記録しました'
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  private
+    def mood_record_params
+      params.require(:mood_record).permit(:recorded_date, :emotion_type, :note)
+    end
+end
