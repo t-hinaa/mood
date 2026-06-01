@@ -1,40 +1,55 @@
-<div class="container">
-  <h1>気分の記録一覧</h1>
-
-  <div class="mb-3">
-    <%= link_to "新しく記録する", new_mood_entry_path, class: "btn btn-primary" %>
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">気分の記録</h1>
+    <div class="flex gap-4">
+      <%= link_to '新しく記録する', new_mood_entry_path, class: 'px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition' %>
+      <%= link_to 'カレンダーで見る', calendar_mood_entries_path, class: 'px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition' %>
+    </div>
   </div>
 
   <% if @mood_entries.any? %>
-    <div class="mood-entries-list">
-      <% @mood_entries.each do |entry| %>
-        <div class="mood-entry-card">
-          <div class="mood-entry-header">
-            <span class="mood-emoji-large">
-              <%= entry.mood_emoji %>
-            </span>
-            <div class="mood-entry-info">
-              <p class="mood-date">
-                <%= entry.recorded_at.strftime("%Y年%m月%d日 %H:%M") %>
-              </p>
-              <p class="mood-level">気分レベル: <%= entry.mood_level %></p>
-            </div>
-          </div>
-
+    <div class="space-y-4">
+      <% @mood_entries.group_by { |entry| entry.recorded_at.to_date }.each do |date, entries| %>
+        <!-- 日付ごとのセクション -->
+        <div id="date-<%= date.strftime('%Y%m%d') %>" class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">
+            <%= date.strftime('%Y年%m月%d日（%a）') %>
+          </h2>
           
-          <% if entry.note.present? %>
-            <div class="mood-entry-note">
-              <%= simple_format(entry.note) %>
-            </div>
-          <% end %>
+          <div class="space-y-3">
+            <% entries.each do |entry| %>
+              <div class="text-4xl flex-shrink-0">
+                
+                <!-- 気分アイコン -->
+                <%= render 'shared/emotion_svg', emotion_type: entry.emotion_class %>
+                
+                <!-- 記録内容 -->
+                <div class="flex-grow">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-medium text-gray-700">
+                      <%= entry.emotion_type.humanize %>
+                    </span>
+                    <span class="text-sm text-gray-500">
+                      <%= entry.recorded_at.strftime('%H:%M') %>
+                    </span>
+                  </div>
+                  
+                  <% if entry.note.present? %>
+                    <p class="text-gray-700 whitespace-pre-wrap"><%= entry.note %></p>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="alert alert-info">
-      <p>まだ記録がありません。</p>
-      <p><%= link_to "最初の記録をつけてみましょう！", new_mood_entry_path %></p>
+    <!-- 記録がない場合 -->
+    <div class="text-center py-12">
+      <div class="text-6xl mb-4">📝</div>
+      <p class="text-xl text-gray-600 mb-6">まだ記録がありません</p>
+      <%= link_to '最初の記録を作成する', new_mood_entry_path, class: 'inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition' %>
     </div>
   <% end %>
 </div>
-

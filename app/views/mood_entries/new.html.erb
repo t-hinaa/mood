@@ -1,7 +1,7 @@
 <div class="container">
   <h1>今日の気分を記録</h1>
 
-  <%= form_with model: @mood_entry, local: true do |f| %>
+  <%= form_with model: @mood_entry, url: mood_entries_path, local: true do |f| %>
     <!-- エラーメッセージ表示 -->
     <% if @mood_entry.errors.any? %>
       <div class="alert alert-danger">
@@ -16,18 +16,18 @@
 
     <!-- 気分レベル選択 -->
     <div class="form-group">
-      <%= f.label :mood_level, "今の気分は？", class: "form-label" %>
-      <div class="mood-buttons">
-        <% (1..8).each do |level| %>
+      <%= f.label :emotion_type, "今の気分は？", class: "form-label" %>
+      <div class="mood-buttons grid grid-cols-4 gap-4">
+        <% MoodEntry.emotion_types.keys.each do |emotion| %>
           <div class="mood-option">
-            <%= f.radio_button :mood_level, level, id: "mood_level_#{level}", class: "mood-radio" %>
-            <%= label_tag "mood_level_#{level}", class: "mood-label" do %>
-              <span class="mood-emoji">
-                <%= MoodEntry.new(mood_level: level).mood_emoji %>
+            <%= f.radio_button :emotion_type, emotion, id: "emotion_type_#{emotion}", class: "mood-radio hidden" %>
+            <%= label_tag "emotion_type_#{emotion}", class: "mood-label cursor-pointer block text-center p-4 border-2 rounded-lg hover:bg-gray-100 transition" do %>
+              <span class="mood-emoji text-4xl block">
+                <%= render 'shared/emotion_svg', emotion_type: emotion %>
               </span>
             <% end %>
           </div>
-        <% end %>git 
+        <% end %>
       </div>
 
     <!-- 記録日時 -->

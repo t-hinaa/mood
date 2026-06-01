@@ -1,11 +1,117 @@
 <div class="container mx-auto px-4 py-8">
+  <!-- ヘッダー -->
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">気分カレンダー</h1>
-    <%= link_to '気分入力画面へ', mood_entries_path, class: 'btn btn-primary' %>
+    <h1 class="text-3xl font-bold">カレンダー</h1>
+    <%= link_to '一覧に戻る', mood_entries_path, class: 'px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition' %>
   </div>
-  
-  <%= render 'calendar_grid', 
-             year: @year, 
-             month: @month, 
-             mood_records: @mood_records %>
+
+  <!-- 月の切り替え -->
+  <div class="flex justify-between items-center mb-6">
+    <%= link_to calendar_mood_entries_path(year: (@month == 1 ? @year - 1 : @year), month: (@month == 1 ? 12 : @month - 1)), class: 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition' do %>
+      ← 前月
+    <% end %>
+    
+    <h2 class="text-2xl font-bold">
+      <%= "#{@year}年#{@month}月" %>
+    </h2>
+    
+    <%= link_to calendar_mood_entries_path(year: (@month == 12 ? @year + 1 : @year), month: (@month == 12 ? 1 : @month + 1)), class: 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition' do %>
+      次月 →
+    <% end %>
+  </div>
+
+  <!-- カレンダー本体 -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <!-- 曜日ヘッダー -->
+    <div class="grid grid-cols-7 bg-gray-100">
+      <% %w[日 月 火 水 木 金 土].each do |day| %>
+        <div class="p-3 text-center font-medium text-gray-700 border-r last:border-r-0">
+          <%= day %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- カレンダーグリッド -->
+    <div class="grid grid-cols-7">
+      <% start_date = Date.new(@year, @month, 1) %>
+      <% end_date = start_date.end_of_month %>
+      
+      <!-- 月初の空白 -->
+      <% start_date.wday.times do %>
+        <div class="aspect-square border-r border-b bg-gray-50"></div>
+      <% end %>
+
+      <!-- 日付セル -->
+      <% (start_date..end_date).each do |date| %>
+        <% entry = @mood_entries[date] %>
+        <% is_today = date == Date.today %>
+        
+        <a href="#date-<%= date.strftime('%Y%m%d') %>" 
+            class="aspect-square border-r border-b p-2 hover:bg-blue-50 transition <%= 'bg-blue-100' if is_today %>">
+          <div class="h-full flex flex-col">
+            <!-- 日付 -->
+            <div class="text-sm font-medium <%= 'text-blue-600' if is_today %>">
+              <%= date.day %>
+            </div>
+            
+            <!-- 気分アイコン -->
+            <% if entry %>
+              <div class="text-4xl flex-shrink-0">
+                <%= render 'shared/emotion_svg', emotion_type: entry.emotion_type %>
+              </div>
+            <% end %>
+          </div>
+        </a>
+      <% end %>
+
+      <!-- 月末の空白 -->
+      <% (6 - end_date.wday).times do %>
+        <div class="aspect-square border-r border-b bg-gray-50"></div>
+      <% end %>
+    </div>
+  </div>
+  <!-- 日付ごとの詳細一覧 -->
+  <div class="mt-8 space-y-4">
+    <h2 class="text-2xl font-bold mb-4">記録詳細</h2>
+    
+    <% if @mood_entries.any? %>
+      <% @mood_entries.group_by { |_, entry| entry.recorded_at.to_date }.sort.reverse.each do |date, entries_hash| %>
+        <div id="date-<%= date.strftime('%Y%m%d') %>" class="bg-white rounded-lg shadow p-6">
+          <h3 class="text-xl font-bold mb-4 text-gray-800">
+            <%= date.strftime('%Y年%m月%d日（%a）') %>
+          </h3>
+          
+          <div class="space-y-3">
+            <% entries_hash.each do |_, entry| %>
+              <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                <div class="text-4xl flex-shrink-0">
+                  <%= render 'emotion_icon', emotion_type: entry.mood_level %>
+                </div>
+                
+                <div class="flex-grow">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-medium text-gray-700">
+                      <%= entry.emotion_type.humanize %>
+                    </span>
+                    <span class="text-sm text-gray-500">
+                      <%= entry.recorded_at.strftime('%H:%M') %>
+                    </span>
+                  </div>
+                  
+                  <% if entry.note.present? %>
+                    <p class="text-gray-700 whitespace-pre-wrap"><%= entry.note %></p>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="text-center py-12 bg-white rounded-lg shadow">
+        <div class="text-6xl mb-4">📅</div>
+        <p class="text-xl text-gray-600">この月の記録はありません</p>
+      </div>
+    <% end %>
+  </div>
 </div>

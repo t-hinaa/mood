@@ -5,16 +5,12 @@ class MoodEntriesController < ApplicationController
         @mood_entry.recorded_at = Time.current
     end
 
-    # 作成処理
+    # 作成処理(ログインなしでも動く)
     def create
         @mood_entry = MoodEntry.new(mood_entry_params)
     
-        # ログインしている場合は user_id をセット
-        # ログインしていない場合は user_id は nil のまま
-        @mood_entry.user_id = current_user&.id if defined?(current_user)
-    
         if @mood_entry.save
-          # セッションに記録IDを保存（後で自分の記録を取得するため）
+          # セッションに記録IDを保存（ログイン前の記録を追跡）
           session[:mood_entry_ids] ||= []
           session[:mood_entry_ids] << @mood_entry.id
       
@@ -26,38 +22,30 @@ class MoodEntriesController < ApplicationController
 
     # 気分一覧画面
     def index
-        # ログインしている場合はそのユーザーの記録
-        # ログインしていない場合はセッションに保存された記録IDから取得
-        if defined?(current_user) && current_user
-          @mood_entries = current_user.mood_entries.order(recorded_at: :desc)
-        else
-          entry_ids = session[:mood_entry_ids] || []
-          @mood_entries = MoodEntry.where(id: entry_ids).order(recorded_at: :desc)
-        end
+        # セッションに保存された記録IDから取得
+        entry_ids = session[:mood_entry_ids] || []
+        @mood_entries = MoodEntry.where(id: entry_ids).order(recorded_at: :desc)
     end
 
-    # カレンダー画面
+    # カレンダー表示
     def calendar
-        @year = params[:year]&.to_i || Date.today.year
-        @month = params[:month]&.to_i || Date.today.month
+      @year = params[:year]&.to_i || Date.today.year
+      @month = params[:month]&.to_i || Date.today.month
     
-        start_date = Date.new(@year, @month, 1)
-        end_date = start_date.end_of_month
-    
-    # current_userがある場合のみカレンダー表示
-        if defined?(current_user) && current_user
-          @mood_records = current_user.mood_records
-                                  .where(recorded_date: start_date..end_date)
-                                  .index_by(&:recorded_date)
-        else
-          # ログインしていない場合は空のハッシュ
-          @mood_records = {}
-        end
-      end
+      # 月初と月末を取得
+      start_date = Date.new(@year, @month, 1)
+      end_date = start_date.end_of_month
+
+      # セッションに保存された記録IDから取得
+      entry_ids = session[:mood_entry_ids] || []
+      @mood_entries = MoodEntry.where(id: entry_ids)
+                              .where(recorded_at: start_date..end_date)
+                              .index_by { |entry| entry.recorded_at.to_date }
+    end
 
     private
 
     def mood_entry_params
-        params.require(:mood_entry).permit(:mood_level, :note, :recorded_at)
+      params.require(:mood_entry).permit(:emotion_type, :note, :recorded_at)
     end
 end
