@@ -1,0 +1,62 @@
+<div class="calendar-container bg-white rounded-lg shadow p-6">
+  <!-- ヘッダー（月の切り替え） -->
+  <div class="calendar-header flex justify-between items-center mb-6">
+    <%= link_to "← 前月", 
+                calendar_mood_entries_path(year: year, month: month - 1), 
+                class: "text-blue-600 hover:text-blue-800" %>
+    <h2 class="text-2xl font-bold"><%= "#{year}年#{month}月" %></h2>
+    <%= link_to "次月 →", 
+                calendar_mood_entries_path(year: year, month: month + 1), 
+                class: "text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <!-- カレンダーグリッド -->
+  <div class="grid grid-cols-7 gap-2">
+    <!-- 曜日ヘッダー -->
+    <% %w[日 月 火 水 木 金 土].each do |day| %>
+      <div class="text-center font-bold py-2 bg-gray-100 rounded"><%= day %></div>
+    <% end %>
+    
+    <% start_date = Date.new(year, month, 1) %>
+    <% end_date = start_date.end_of_month %>
+    
+    <!-- 月初の空白 -->
+    <% start_date.wday.times do %>
+      <div class="calendar-day-empty bg-gray-50 rounded"></div>
+    <% end %>
+    
+    <!-- 日付のセル -->
+    <% (start_date..end_date).each do |date| %>
+      <div class="calendar-day border rounded p-3 hover:bg-gray-50 transition <%= 'bg-blue-50' if date == Date.today %>">
+        <!-- 日付表示 -->
+        <div class="text-sm font-semibold mb-2 <%= 'text-blue-600' if date == Date.today %>">
+          <%= date.day %>
+        </div>
+        
+        <!-- 気分記録の表示 -->
+        <% if mood_records[date] %>
+          <div class="mood-display text-center">
+            <%= render 'emotion_icon', 
+                       emotion_type: mood_records[date].emotion_type %>
+            <!-- 更新リンク -->
+            <%= link_to '変更', 
+                        edit_mood_record_path(mood_records[date]), 
+                        class: 'text-xs text-blue-500 hover:underline mt-1 block',
+                        data: { turbo_frame: 'mood_form' } %>
+          </div>
+        <% else %>
+          <!-- 新規記録リンク -->
+          <%= link_to '+', 
+                      new_mood_record_path(date: date), 
+                      class: 'text-2xl text-gray-400 hover:text-blue-600 block text-center',
+                      data: { turbo_frame: 'mood_form' } %>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <!-- 月末の空白 -->
+    <% (6 - end_date.wday).times do %>
+      <div class="calendar-day-empty bg-gray-50 rounded"></div>
+    <% end %>
+  </div>
+</div>
