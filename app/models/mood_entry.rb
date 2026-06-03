@@ -6,15 +6,15 @@ class MoodEntry < ApplicationRecord
   validates :recorded_at, presence: true
 
   # 気分レベル
-  enum emotion_type: {
-    very_happy: 'very_happy',
-    happy: 'happy',
-    calm: 'calm',
-    neutral: 'neutral',
-    anxious: 'anxious',
-    sad: 'sad',
-    angry: 'angry',
-    very_sad: 'very_sad'
+  enum :emotion_type,{
+    joy: 10,
+    reassurance: 20,
+    surprise: 30,
+    anticipation: 40,
+    apprehension: 50,
+    sad: 60,
+    angry: 70,
+    disgust: 80 
   }
 
   # SVGのクラス名を返すメソッド
